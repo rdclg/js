@@ -1,0 +1,44 @@
+ Develop a web-based multiple-choice quiz with at least five questions,
+four options per question and one selectable answer per question. Display the number of
+correct and incorrect answers after submission.
+Technology: Servlet
+Where to write: src/java/QuizServlet.java
+Easy explanation: The servlet shows five questions and four options for each. Each question uses radio buttons so one
+answer can be selected.
+Code
+import java.io.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+@WebServlet("/quiz")
+public class QuizServlet extends HttpServlet {
+    String[] questions = {"2 + 2 = ?", "Capital of India?", "Java is a...?", "HTML means?", "Red + blue makes?"};
+    String[][] opts = {{"3","4","5","6"},{"Mumbai","Delhi","Pune","Goa"},
+        {"Language","Car","OS","Browser"},{"Markup language","Database","CPU","Network"},
+        {"Green","Purple","Yellow","Black"}};
+    String[] answer = {"B","B","A","A","B"};
+    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        res.setContentType("text/html"); PrintWriter out = res.getWriter();
+        out.println("<form method='post'>");
+        for (int i=0; i<questions.length; i++) {
+            out.println("<p>"+(i+1)+". "+questions[i]+"</p>");
+            for (int j=0; j<4; j++) {
+                char letter = (char)('A'+j);
+                out.println("<label><input type='radio' name='q"+i+"' value='"+letter+"' required> "
+                    +letter+". "+opts[i][j]+"</label><br>");
+            }
+Page 11
+Java Enterprise QB - Easy Code, Output & Viva
+        }
+        out.println("<button>Submit quiz</button></form>");
+    }
+    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        int correct=0;
+        for (int i=0; i<answer.length; i++) if (answer[i].equals(req.getParameter("q"+i))) correct++;
+        res.getWriter().println("Correct: "+correct+"<br>Incorrect: "+(answer.length-correct));
+    }
+}
+Sample output: Correct: 4
+Incorrect: 1
+How to run: Open `/quiz`, answer all five questions, and submit.
+Viva question: Why use radio buttons?
+Viva answer: They let the user select one answer from a group.

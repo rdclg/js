@@ -1,0 +1,39 @@
+ Create a Servlet-based online test portal that stores student details in
+sessions and displays them on another page.
+Technology: Servlet + Session
+Where to write: Create `TestStudentServlet.java` and `StudentDetailsServlet.java` separately.
+Easy explanation: The first servlet stores details in the session and redirects to a second servlet to display them.
+Code
+// File: TestStudentServlet.java
+import java.io.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+@WebServlet("/studenttest")
+public class TestStudentServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        HttpSession s = req.getSession();
+        s.setAttribute("name", req.getParameter("name"));
+        s.setAttribute("roll", req.getParameter("roll"));
+        res.sendRedirect("studentdetails");
+    }
+    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        res.setContentType("text/html");
+        res.getWriter().println("<form method='post'>Name: <input name='name'> Roll: <input name='roll'><button>Save</button></form>");
+    }
+}
+// File: StudentDetailsServlet.java
+import java.io.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+@WebServlet("/studentdetails")
+public class StudentDetailsServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        HttpSession s = req.getSession(false);
+        if (s == null || s.getAttribute("name") == null) { res.getWriter().println("Enter details first"); return; }
+        res.getWriter().println("Student: " + s.getAttribute("name") + " | Roll: " + s.getAttribute("roll"));
+    }
+}
+Sample output: Student: Riya | Roll: 12
+How to run: Open `/studenttest`, enter details and submit.
+Viva question: What is sendRedirect()?
+Viva answer: It asks the browser to make a new request to another URL.

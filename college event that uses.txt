@@ -1,0 +1,28 @@
+Create a Servlet application for a college event that uses
+RequestDispatcher to forward a valid registration to a confirmation page.
+Technology: Servlet + RequestDispatcher
+Where to write: `src/java/EventRegisterServlet.java` and `Web Pages/eventconfirm.jsp`
+Easy explanation: The servlet checks the name and email, then forwards valid details to a confirmation JSP.
+Code
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+@WebServlet("/eventregister")
+public class EventRegisterServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        res.setContentType("text/html");
+        res.getWriter().println("<form method='post'>Name: <input name='name' required> "
+            + "Email: <input type='email' name='email' required><button>Register</button></form>");
+    }
+    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        String name=req.getParameter("name"); String email=req.getParameter("email");
+        if (name.trim().isEmpty() || !email.contains("@")) { res.getWriter().println("Please enter valid details"); return; }
+        req.setAttribute("name", name); req.setAttribute("email", email);
+        req.getRequestDispatcher("/eventconfirm.jsp").forward(req, res);
+    }
+}
+Sample output: Registration confirmed for Riya (riya@example.com)
+How to run: Create `eventconfirm.jsp` using `${requestScope.name}` and `${requestScope.email}`. Open `/eventregister`.
+Viva question: What is the purpose of a confirmation page?
+Viva answer: It tells the user that the form was received successfully

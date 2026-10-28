@@ -1,0 +1,37 @@
+Create a Servlet application for a canteen that accepts the prices of two
+food items and displays their total cost.
+Technology: Servlet
+Where to write: src/java/CanteenServlet.java
+Easy explanation: The total cost is the sum of the two food prices.
+Code
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+@WebServlet("/canteen")
+public class CanteenServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        out.println("<h2>Simple Form</h2>");
+        out.println("<form method='post'>");
+        out.println("<label>Food item 1 price: <input type='number' name='p1' required></label><br>");
+        out.println("<label>Food item 2 price: <input type='number' name='p2' required></label><br>");
+        out.println("<button type='submit'>Submit</button></form>");
+    }
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        double p1 = Double.parseDouble(request.getParameter("p1"));
+        double p2 = Double.parseDouble(request.getParameter("p2"));
+Page 14
+Java Enterprise QB - Easy Code, Output & Viva
+        out.println("Total cost = Rs. " + (p1+p2));
+    }
+}
+Sample output: Prices 35 and 40 -> Total cost = Rs. 75.0
+How to run: Open `/canteen` and enter both prices.
+Viva question: Which operator adds two values in Java?
+Viva answer: The plus operator `+`.

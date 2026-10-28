@@ -1,0 +1,40 @@
+Develop a Servlet-based question-and-answer application that retrieves
+questions from a database.
+Technology: Servlet + JDBC
+Where to write: src/java/QuestionAnswerServlet.java; table `qa(question, answer)`
+Easy explanation: The servlet runs a SELECT query and displays each question-answer row. Add rows to the `qa` table first.
+Code
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+@WebServlet("/qa")
+public class QuestionAnswerServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        out.println("<h2>Simple Form</h2>");
+        out.println("<form method='post'>");
+        out.println("<p>This page reads all questions and answers from the database.</p>");
+        out.println("<button type='submit'>Submit</button></form>");
+    }
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        try (java.sql.Connection con = app.DB.getConnection();
+             java.sql.Statement st = con.createStatement();
+             java.sql.ResultSet rs = st.executeQuery("SELECT question, answer FROM qa")) {
+            while (rs.next()) {
+                out.println("<p><b>Q:</b> " + rs.getString("question") + "<br><b>A:</b> "
+                            + rs.getString("answer") + "</p>");
+            }
+        } catch (Exception e) { out.println("Database error: " + e.getMessage()); }
+    }
+}
+Sample output: Q: What is Java?
+A: A programming language.
+How to run: Create the `qa` table, insert a few rows, start Tomcat and open `/qa`.
+Viva question: What does ResultSet do?
+Viva answer: It holds the rows returned by a SQL query.

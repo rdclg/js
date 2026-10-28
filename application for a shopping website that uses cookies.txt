@@ -1,0 +1,39 @@
+Create a Servlet application for a shopping website that uses cookies to
+remember a visitor's name on subsequent visits.
+Technology: Servlet + Cookies
+Where to write: src/java/RememberNameServlet.java
+Easy explanation: The servlet saves the visitor name in a cookie and reads it again on the next visit.
+Code
+import java.io.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+@WebServlet("/remembername")
+public class RememberNameServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        res.setContentType("text/html");
+        PrintWriter out = res.getWriter();
+        String saved = null;
+        Cookie[] cookies = req.getCookies();
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("visitorName".equals(c.getName())) saved = c.getValue();
+            }
+        }
+        if (saved != null) out.println("Welcome back, " + saved + "!<br>");
+        out.println("<form method='post'>Name: <input name='name' required><button>Save name</button></form>");
+    }
+    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        String name = req.getParameter("name");
+        Cookie c = new Cookie("visitorName", name);
+        c.setMaxAge(30 * 24 * 60 * 60);
+        res.addCookie(c);
+        res.setContentType("text/html");
+        res.getWriter().println("Hello " + name + ". Your name is saved.");
+    }
+Page 17
+Java Enterprise QB - Easy Code, Output & Viva
+}
+Sample output: First submit: Hello Riya. Your name is saved. Next visit: Welcome back, Riya!
+How to run: Open `/remembername`, submit a name, then revisit or refresh the URL.
+Viva question: How long can a cookie live?
+Viva answer: It can be given an expiry time using `setMaxAge()`; the browser may also delete it.

@@ -1,0 +1,34 @@
+Create a Servlet that demonstrates session creation and destruction and
+checks whether the user is visiting for the first time or has visited previously.
+Technology: Servlet + Session
+Where to write: src/java/SessionDemoServlet.java
+Easy explanation: HttpSession stores values while the user’s session exists. `invalidate()` ends the session.
+Code
+import java.io.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+@WebServlet("/sessiondemo")
+public class SessionDemoServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        res.setContentType("text/html");
+        HttpSession session = req.getSession();
+        Integer n = (Integer) session.getAttribute("count");
+        if (n == null) n = 0;
+        n++;
+        session.setAttribute("count", n);
+        PrintWriter out = res.getWriter();
+        out.println(n == 1 ? "First visit in this session" : "Welcome back in this session");
+        out.println("<br>Visit count: " + n);
+        out.println("<br><a href='sessiondemo?end=yes'>Destroy session</a>");
+        if ("yes".equals(req.getParameter("end"))) {
+            session.invalidate();
+            out.println("<br>Session destroyed. Refresh to start a new session.");
+        }
+    }
+}
+Sample output: First visit in this session
+Visit count: 1
+Next refresh: Welcome back in this session
+How to run: Open `/sessiondemo`, refresh, and then click Destroy session.
+Viva question: How do you destroy a session?
+Viva answer: Call `session.invalidate()`.

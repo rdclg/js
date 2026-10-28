@@ -1,0 +1,29 @@
+Create a Servlet application for a library that accepts book details and
+displays the submitted information on a separate page.
+Technology: Servlet + JSP
+Where to write: `src/java/BookEntryServlet.java` and `Web Pages/bookdetails.jsp`
+Easy explanation: The servlet accepts book details and forwards them to a separate JSP page using request attributes.
+Code
+// File: BookEntryServlet.java
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+@WebServlet("/bookentry")
+public class BookEntryServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        res.setContentType("text/html");
+        res.getWriter().println("<form method='post'>Title: <input name='title'> Author: <input name='author'><button>Submit</button></form>");
+    }
+    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        req.setAttribute("title", req.getParameter("title"));
+        req.setAttribute("author", req.getParameter("author"));
+        req.getRequestDispatcher("/bookdetails.jsp").forward(req, res);
+Page 19
+Java Enterprise QB - Easy Code, Output & Viva
+    }
+}
+Sample output: bookdetails.jsp displays: Book title: Java Basics; Author: A. Kumar
+How to run: Create `bookdetails.jsp` with `${requestScope.title}` and `${requestScope.author}`. Open `/bookentry`.
+Viva question: What is JSP?
+Viva answer: JavaServer Pages lets you create dynamic web pages

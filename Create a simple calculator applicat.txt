@@ -1,0 +1,46 @@
+Create a simple calculator application using a Servlet.
+Technology: Servlet
+Where to write: src/java/CalculatorServlet.java
+Easy explanation: The servlet reads two numbers and an operation, calculates the answer and prints it.
+Code
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+@WebServlet("/calculator")
+public class CalculatorServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        out.println("<h2>Simple Form</h2>");
+        out.println("<form method='post'>");
+        out.println("<label>First number: <input type='number' name='a' required></label><br>");
+        out.println("<label>Second number: <input type='number' name='b' required></label><br>");
+        out.println("<label>Operation (+, -, *, /): <input name='op' required></label><br>");
+        out.println("<button type='submit'>Submit</button></form>");
+    }
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        double a = Double.parseDouble(request.getParameter("a"));
+        double b = Double.parseDouble(request.getParameter("b"));
+        String op = request.getParameter("op");
+        double ans;
+        switch (op) {
+            case "+": ans = a + b; break;
+            case "-": ans = a - b; break;
+            case "*": ans = a * b; break;
+            case "/":
+                if (b == 0) { out.println("Cannot divide by zero"); return; }
+                ans = a / b; break;
+            default: out.println("Use +, -, * or /"); return;
+        }
+        out.println("Answer = " + ans);
+    }
+}
+Sample output: For 10, 5 and *: `Answer = 50.0`
+How to run: Run `/calculator`, enter two numbers and an operator such as `+`, then press Submit.
+Viva question: What is a Servlet?
+Viva answer: A Java class that handles web requests and sends responses

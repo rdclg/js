@@ -1,0 +1,39 @@
+ Create a Servlet-based login application for an online examination portal.
+Technology: Servlet + Session
+Where to write: src/java/ExamLoginServlet.java
+Easy explanation: A simple login for students. A session remembers the student after successful login.
+Code
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+@WebServlet("/examlogin")
+public class ExamLoginServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        out.println("<h2>Simple Form</h2>");
+        out.println("<form method='post'>");
+        out.println("<label>Student name: <input type='text' name='name' required></label><br>");
+        out.println("<label>Password: <input type='password' name='password' required></label><br>");
+        out.println("<button type='submit'>Submit</button></form>");
+    }
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        String name = request.getParameter("name");
+        String password = request.getParameter("password");
+        if ("exam123".equals(password)) {
+            request.getSession().setAttribute("student", name);
+            out.println("Welcome " + name + " to the Online Examination Portal");
+            out.println("<br><a href='exam'>Start Exam</a>");
+        } else out.println("Login failed");
+    }
+}
+Sample output: Welcome Riya to the Online Examination Portal
+Start Exam
+How to run: Open `/examlogin`; use any name and password `exam123`.
+Viva question: Why is a session useful in an exam portal?
+Viva answer: It remembers the logged-in student between pages

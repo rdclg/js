@@ -1,0 +1,49 @@
+Create a Servlet application for a college notice board that allows an
+administrator to upload PDF notices and students to download them.
+Technology: Servlet file upload/download
+Where to write: Create both servlet files separately. Only permit trusted administrator uploads in a real application.
+Easy explanation: The upload servlet saves a PDF in a folder; the download servlet streams it to the student. Production
+applications also need administrator login and safe file storage.
+Code
+// File: NoticeUploadServlet.java
+import java.io.*;
+import javax.servlet.annotation.*;
+import javax.servlet.http.*;
+@WebServlet("/noticeupload")
+@MultipartConfig
+public class NoticeUploadServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        res.setContentType("text/html");
+        res.getWriter().println("<form method='post' enctype='multipart/form-data'>"
+            + "Select PDF: <input type='file' name='file' accept='application/pdf' required><button>Upload</button></form>");
+    }
+    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException, javax.servlet.ServletException {
+        Part p = req.getPart("file");
+        String name = new File(p.getSubmittedFileName()).getName();
+        if (!name.toLowerCase().endsWith(".pdf")) { res.getWriter().println("PDF files only"); return; }
+        File dir = new File(System.getProperty("user.home"), "college_notices"); dir.mkdirs();
+        p.write(new File(dir, name).getAbsolutePath());
+        res.getWriter().println("Uploaded. Download: <a href='noticedownload?name="+name+"'>"+name+"</a>");
+    }
+}
+// File: NoticeDownloadServlet.java
+import java.io.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+@WebServlet("/noticedownload")
+public class NoticeDownloadServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        String name = new File(req.getParameter("name")).getName();
+        File f = new File(new File(System.getProperty("user.home"), "college_notices"), name);
+        if (!f.isFile()) { res.getWriter().println("Notice not found"); return; }
+        res.setContentType("application/pdf");
+        res.setHeader("Content-Disposition", "attachment; filename=""+name+""");
+        try (InputStream in=new FileInputStream(f); OutputStream out=res.getOutputStream()) {
+            byte[] b=new byte[4096]; int n; while((n=in.read(b))>0) out.write(b,0,n);
+        }
+    }
+}
+Sample output: Uploaded. Download: notice.pdf
+How to run: Open `/noticeupload`, upload a PDF, then click the generated download link.
+Viva question: Why check the file extension?
+Viva answer: To reject obviously wrong file types; stronger content validation is also needed in real systems

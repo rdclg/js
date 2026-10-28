@@ -1,0 +1,43 @@
+basic calculator using ServletInputStream and
+ServletOutputStream to perform addition, subtraction, multiplication, division and modulus.
+Technology: Servlet streams
+Where to write: src/java/StreamCalculatorServlet.java
+Easy explanation: ServletInputStream reads the raw request body. ServletOutputStream writes the result. This example uses
+a simple comma-separated body.
+Code
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+@WebServlet("/streamcalc")
+public class StreamCalculatorServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest req, HttpServletResponse res)
+            throws IOException {
+        // Send raw text as: 12,5,mod
+        ServletInputStream in = req.getInputStream();
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        int ch;
+        while ((ch = in.read()) != -1) buffer.write(ch);
+        String[] p = buffer.toString("UTF-8").trim().split(",");
+        double a = Double.parseDouble(p[0]);
+        double b = Double.parseDouble(p[1]);
+        String op = p[2];
+        double r;
+        switch (op) {
+            case "add": r = a + b; break;
+            case "sub": r = a - b; break;
+            case "mul": r = a * b; break;
+            case "div": r = a / b; break;
+            case "mod": r = a % b; break;
+            default: r = 0;
+        }
+        res.setContentType("text/plain;charset=UTF-8");
+        ServletOutputStream out = res.getOutputStream();
+        out.print("Result = " + r);
+    }
+}
+Sample output: Request body `12,5,mod` -> response `Result = 2.0`.
+How to run: Deploy the servlet. Send a POST request to `/streamcalc` with plain-text body `12,5,add` (or sub/mul/div/mod). A
+REST client or curl can send the raw body.
+Viva question: What is ServletInputStream used for?
+Viva answer: It reads binary or raw data from the client request.

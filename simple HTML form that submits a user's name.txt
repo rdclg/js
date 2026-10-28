@@ -1,0 +1,26 @@
+ Create a simple HTML form that submits a user's name to a Servlet and
+displays a welcome message containing the name.
+Technology: HTML + Servlet
+Where to write: `Web Pages/name.html` and `src/java/WelcomeNameServlet.java`
+Easy explanation: The HTML form sends the name to the servlet. The servlet reads the parameter and displays it.
+Code
+<!-- File: name.html in Web Pages -->
+<form action="welcomeName" method="post">
+  Name: <input name="name" required>
+  <button type="submit">Send</button>
+</form>
+// File: WelcomeNameServlet.java
+import java.io.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+@WebServlet("/welcomeName")
+public class WelcomeNameServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        res.setContentType("text/html;charset=UTF-8");
+        res.getWriter().println("Welcome " + req.getParameter("name"));
+    }
+}
+Sample output: Welcome Riya
+How to run: Run `name.html`, type a name and press Send.
+Viva question: How does a servlet read a form field?
+Viva answer: Use `request.getParameter("fieldName")`.

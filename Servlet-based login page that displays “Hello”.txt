@@ -1,0 +1,42 @@
+Servlet-based login page that displays “Hello” or “Hello
+[username]” for valid credentials and “login failed” for invalid credentials.
+Technology: Servlet
+Where to write: src/java/LoginServlet.java
+Easy explanation: This beginner example checks a fixed username and password. Real applications should use a database
+and hashed passwords.
+Code
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+@WebServlet("/login")
+public class LoginServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        out.println("<h2>Simple Form</h2>");
+        out.println("<form method='post'>");
+        out.println("<label>Username: <input type='text' name='username' required></label><br>");
+        out.println("<label>Password: <input type='password' name='password' required></label><br>");
+        out.println("<button type='submit'>Submit</button></form>");
+    }
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+
+Java Enterprise QB - Easy Code, Output & Viva
+            throws IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        String u = request.getParameter("username");
+        String p = request.getParameter("password");
+        if ("student".equals(u) && "1234".equals(p))
+            out.println("Hello " + u);
+        else
+            out.println("login failed");
+    }
+}
+Sample output: Valid: `Hello student`
+Invalid: `login failed`
+How to run: Open `/login`. Try username `student` and password `1234`.
+Viva question: What is authentication?
+Viva answer: Checking whether a user is allowed to log in.

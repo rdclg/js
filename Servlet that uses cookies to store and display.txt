@@ -1,0 +1,32 @@
+ Create a Servlet that uses cookies to store and display the number of
+times a user has visited the application.
+Technology: Servlet + Cookies
+Where to write: src/java/VisitCookieServlet.java
+Easy explanation: A cookie stores a small value in the browser. The next visit sends the cookie back to the servlet.
+Code
+import java.io.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+@WebServlet("/visits")
+public class VisitCookieServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        int count = 0;
+        Cookie[] cookies = req.getCookies();
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("visits".equals(c.getName())) count = Integer.parseInt(c.getValue());
+            }
+        }
+        count++;
+        Cookie c = new Cookie("visits", String.valueOf(count));
+        c.setMaxAge(7 * 24 * 60 * 60);
+        res.addCookie(c);
+        res.setContentType("text/html");
+        res.getWriter().println("You visited " + count + " time(s).");
+    }
+}
+Sample output: You visited 1 time(s).
+Refresh: You visited 2 time(s).
+How to run: Open `/visits` and refresh the page.
+Viva question: Where is a cookie stored?
+Viva answer: In the user’s browser.

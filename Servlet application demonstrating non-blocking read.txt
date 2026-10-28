@@ -1,0 +1,38 @@
+ Servlet application demonstrating non-blocking read
+operations.
+Technology: Servlet 3.1 non-blocking I/O
+Where to write: src/java/AsyncReadServlet.java
+Easy explanation: The servlet registers a ReadListener and reads characters only when the input stream is ready.
+Code
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+@WebServlet(value="/asyncread", asyncSupported=true)
+public class AsyncReadServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest req, HttpServletResponse res)
+            throws IOException {
+        AsyncContext ctx = req.startAsync();
+        ServletInputStream in = req.getInputStream();
+        StringBuilder data = new StringBuilder();
+        in.setReadListener(new ReadListener() {
+            public void onDataAvailable() throws IOException {
+                while (in.isReady() && !in.isFinished()) {
+                    int ch = in.read();
+                    if (ch == -1) break;
+                    data.append((char) ch);
+                }
+            }
+            public void onAllDataRead() throws IOException {
+                res.setContentType("text/plain;charset=UTF-8");
+                res.getWriter().println("Read body: " + data);
+                ctx.complete();
+            }
+            public void onError(Throwable t) { ctx.complete(); }
+        });
+    }
+}
+Sample output: For body hello, output is: Read body: hello.
+How to run: Deploy and POST any small body to `/asyncread`.
+Viva question: What is non-blocking I/O?
+Viva answer: It lets a program continue other work instead of waiting for input to be ready

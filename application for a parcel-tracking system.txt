@@ -1,0 +1,39 @@
+Create a Servlet application for a parcel-tracking system that uses
+sessions to store and display customer tracking details.
+Technology: Servlet + Session
+Where to write: src/java/ParcelServlet.java
+Easy explanation: Session attributes hold the customer name and tracking number while browsing the application.
+Code
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+@WebServlet("/parcel")
+public class ParcelServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        out.println("<h2>Simple Form</h2>");
+        out.println("<form method='post'>");
+        out.println("<label>Customer name: <input type='text' name='name' required></label><br>");
+        out.println("<label>Tracking number: <input type='text' name='tracking' required></label><br>");
+        out.println("<button type='submit'>Submit</button></form>");
+    }
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        HttpSession s = request.getSession();
+        s.setAttribute("customer", request.getParameter("name"));
+        s.setAttribute("tracking", request.getParameter("tracking"));
+        out.println("Customer: " + s.getAttribute("customer") + "<br>");
+        out.println("Tracking number: " + s.getAttribute("tracking"));
+    }
+}
+Sample output: Customer: Riya
+Tracking number: PK12345
+How to run: Open `/parcel`, enter customer and tracking details, then refresh to see the saved session values by adding
+display code as needed.
+Viva question: How do you store data in a session?
+Viva answer: Use `session.setAttribute(key, value)`

@@ -1,0 +1,44 @@
+: Create a Servlet using RequestDispatcher to validate a password and
+forward the user to a Welcome Servlet when valid; otherwise, display an error or remain on
+the index page.
+Technology: Servlet + RequestDispatcher
+Where to write: Create `PasswordServlet.java` and `WelcomeServlet.java` as two separate files; form can be `index.html`.
+Easy explanation: RequestDispatcher forwards a valid request to another servlet without making a new browser request.
+Code
+// File: PasswordServlet.java
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+@WebServlet("/checkpassword")
+public class PasswordServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
+        if ("hello123".equals(req.getParameter("password"))) {
+            req.setAttribute("name", req.getParameter("name"));
+            req.getRequestDispatcher("/welcome").forward(req, res);
+        } else {
+            res.setContentType("text/html");
+            res.getWriter().println("Wrong password. <a href='index.html'>Try again</a>");
+        }
+    }
+Java Enterprise QB - Easy Code, Output & Viva
+}
+// File: WelcomeServlet.java
+import java.io.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+@WebServlet("/welcome")
+public class WelcomeServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        res.getWriter().println("Welcome " + req.getAttribute("name"));
+    }
+    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        doGet(req, res);
+    }
+}
+Sample output: Valid password: Welcome Sam
+Wrong password: Wrong password. Try again
+How to run: Create an HTML form that posts name/password to `/checkpassword`; valid password is `hello123`.
+Viva question: What does forward() do?
+Viva answer: It passes the same request and response to another server resource.

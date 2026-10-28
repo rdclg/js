@@ -1,0 +1,39 @@
+ Create a Servlet application that calculates a water bill based on units
+consumed.
+Technology: Servlet
+Where to write: src/java/WaterBillServlet.java
+Easy explanation: The bill uses example slab rates. Replace these rates with the rate chart your teacher provides.
+Code
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+@WebServlet("/waterbill")
+public class WaterBillServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        out.println("<h2>Simple Form</h2>");
+        out.println("<form method='post'>");
+        out.println("<label>Units consumed: <input type='number' name='units' required></label><br>");
+        out.println("<button type='submit'>Submit</button></form>");
+    }
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        int u = Integer.parseInt(request.getParameter("units"));
+        if (u < 0) { out.println("Units cannot be negative"); return; }
+        double bill;
+        if (u <= 100) bill = u * 2.0;
+        else if (u <= 200) bill = 100*2.0 + (u-100)*3.0;
+        else bill = 100*2.0 + 100*3.0 + (u-200)*5.0;
+        out.println("Water bill = Rs. " + bill);
+        out.println("<br>Demo rates: first 100 at Rs.2, next 100 at Rs.3, above 200 at Rs.5.");
+    }
+}
+Sample output: Units 250 -> Water bill = Rs. 750.0
+How to run: Open `/waterbill` and enter units.
+Viva question: What is a slab rate?
+Viva answer: A rate that changes when usage crosses a set limit

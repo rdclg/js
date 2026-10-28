@@ -1,0 +1,45 @@
+Create a registration Servlet using JDBC to accept username, password,
+email and country from an HTML form and store the details in a database.
+Technology: Servlet + JDBC
+Where to write: src/java/RegisterServlet.java; shared `app/DB.java`; MySQL table `users`
+Easy explanation: The form values are stored using a prepared SQL statement. Create the table first and configure the
+shared DB helper shown in the setup section.
+Code
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+@WebServlet("/register")
+public class RegisterServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        out.println("<h2>Simple Form</h2>");
+        out.println("<form method='post'>");
+        out.println("<label>Username: <input type='text' name='username' required></label><br>");
+        out.println("<label>Password: <input type='password' name='password' required></label><br>");
+        out.println("<label>Email: <input type='email' name='email' required></label><br>");
+        out.println("<label>Country: <input type='text' name='country' required></label><br>");
+        out.println("<button type='submit'>Submit</button></form>");
+    }
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        try (java.sql.Connection con = app.DB.getConnection();
+             java.sql.PreparedStatement ps = con.prepareStatement(
+                 "INSERT INTO users(username,password,email,country) VALUES(?,?,?,?)")) {
+            ps.setString(1, request.getParameter("username"));
+            ps.setString(2, request.getParameter("password"));
+            ps.setString(3, request.getParameter("email"));
+            ps.setString(4, request.getParameter("country"));
+            ps.executeUpdate();
+            out.println("Registration saved");
+        } catch (Exception e) { out.println("Database error: " + e.getMessage()); }
+    }
+}
+Sample output: Registration saved
+How to run: Run `/register`; submit the form after creating the `users` table.
+Viva question: Why use PreparedStatement?
+Viva answer: It safely passes values to SQL and helps prevent SQL injection.

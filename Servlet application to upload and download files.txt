@@ -1,0 +1,52 @@
+ Create a Servlet application to upload and download files.
+Technology: Servlet file upload/download
+Where to write: Create `UploadServlet.java` and `DownloadServlet.java` separately. Files are saved in a folder named
+`servlet_uploads` inside your home folder.
+Easy explanation: `@MultipartConfig` allows the servlet to receive uploaded files. The second servlet streams a saved file
+back to the browser.
+Code
+// File: UploadServlet.java
+import java.io.*;
+import javax.servlet.annotation.*;
+import javax.servlet.http.*;
+@WebServlet("/upload")
+@MultipartConfig
+public class UploadServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        res.setContentType("text/html");
+        res.getWriter().println("<form method='post' enctype='multipart/form-data'>"
+            + "<input type='file' name='file' required><button>Upload</button></form>");
+    }
+    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException, javax.servlet.ServletException {
+        Part part = req.getPart("file");
+        String name = new File(part.getSubmittedFileName()).getName();
+        File folder = new File(System.getProperty("user.home"), "servlet_uploads");
+        folder.mkdirs();
+        part.write(new File(folder, name).getAbsolutePath());
+        res.getWriter().println("Saved file: " + name + " in " + folder.getAbsolutePath());
+    }
+}
+// File: DownloadServlet.java
+import java.io.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+@WebServlet("/download")
+public class DownloadServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        String name = new File(req.getParameter("name")).getName();
+Page 9
+Java Enterprise QB - Easy Code, Output & Viva
+        File file = new File(new File(System.getProperty("user.home"), "servlet_uploads"), name);
+        if (!file.isFile()) { res.getWriter().println("File not found"); return; }
+        res.setHeader("Content-Disposition", "attachment; filename="" + name + """);
+        try (InputStream in = new FileInputStream(file); OutputStream out = res.getOutputStream()) {
+            byte[] b = new byte[4096]; int n;
+            while ((n = in.read(b)) > 0) out.write(b, 0, n);
+        }
+    }
+}
+Sample output: Upload response: Saved file: notes.txt in .../servlet_uploads
+Download URL: /download?name=notes.txt
+How to run: Open `/upload` and select a file. For downloading, open `/download?name=your-file-name`. Use only trusted files.
+Viva question: Why is @MultipartConfig used?
+Viva answer: It enables multipart form-data file uploads

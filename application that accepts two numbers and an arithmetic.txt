@@ -1,0 +1,43 @@
+ Create a Servlet application that accepts two numbers and an arithmetic
+operation from an HTML form, calculates the result and displays it.
+Technology: Servlet
+Where to write: src/java/OperationServlet.java
+Easy explanation: The form sends two numbers and an operation name. The servlet selects the calculation.
+Code
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+@WebServlet("/operation")
+public class OperationServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        out.println("<h2>Simple Form</h2>");
+        out.println("<form method='post'>");
+        out.println("<label>Number 1: <input type='number' name='a' required></label><br>");
+        out.println("<label>Number 2: <input type='number' name='b' required></label><br>");
+        out.println("<label>Operation: add, sub, mul, div: <input type='text' name='op' required></label><br>");
+        out.println("<button type='submit'>Submit</button></form>");
+    }
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        double a = Double.parseDouble(request.getParameter("a"));
+        double b = Double.parseDouble(request.getParameter("b"));
+        String op = request.getParameter("op");
+        double r;
+        if ("add".equals(op)) r = a + b;
+        else if ("sub".equals(op)) r = a - b;
+        else if ("mul".equals(op)) r = a * b;
+        else if ("div".equals(op) && b != 0) r = a / b;
+        else { out.println("Invalid operation or division by zero"); return; }
+        out.println("Result = " + r);
+    }
+}
+Sample output: Number 1: 8, Number 2: 2, op: div -> Result = 4.0
+How to run: Open `/operation`, enter values and use `add`, `sub`, `mul` or `div`.
+Viva question: What does doPost() do?
+Viva answer: It handles HTTP POST form submissions.

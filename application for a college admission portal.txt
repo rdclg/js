@@ -1,0 +1,31 @@
+Create a Servlet application for a college admission portal that validates
+an application and uses RequestDispatcher to forward it to a confirmation page.
+Technology: Servlet + RequestDispatcher
+Where to write: `src/java/AdmissionServlet.java` and `Web Pages/admissionConfirm.jsp`
+Easy explanation: The servlet checks marks. A valid application is forwarded to a JSP confirmation page.
+Code
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+@WebServlet("/admission")
+public class AdmissionServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        res.setContentType("text/html");
+        res.getWriter().println("<form method='post'>Name: <input name='name' required> "
+            + "Marks: <input type='number' name='marks' required><button>Apply</button></form>");
+    }
+    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        String name = req.getParameter("name");
+        int marks = Integer.parseInt(req.getParameter("marks"));
+        if (marks >= 35) {
+            req.setAttribute("applicant", name);
+            req.getRequestDispatcher("/admissionConfirm.jsp").forward(req, res);
+        } else res.getWriter().println("Application not accepted: minimum 35 marks required");
+    }
+}
+Sample output: admissionConfirm.jsp: Application received for Riya
+How to run: Create `admissionConfirm.jsp` containing `<h2>Application received for ${requestScope.applicant}</h2>`. Open
+`/admission`.
+Viva question: What is a request attribute?
+Viva answer: A value stored on the request so another resource can read it
